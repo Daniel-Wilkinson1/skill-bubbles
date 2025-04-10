@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Skill Entry</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; max-width: 600px; margin: auto; }
+        input, select, button { margin: 8px 0; padding: 6px; width: 100%; box-sizing: border-box; }
+        .error { color: red; font-weight: bold; margin-bottom: 10px; }
+        h1, h3 { color: #333; }
+        ul { padding-left: 20px; }
+    </style>
+</head>
+<body>
+    <h1>📝 Add Your Skill</h1>
+
+    {% if error %}
+        <div class="error">{{ error }}</div>
+    {% endif %}
+
+    <form method="POST">
+        <label>Your Name:</label><br>
+        <input type="text" name="name" required><br>
+
+        {% if data.skills %}
+            <label>Select Existing Skill:</label><br>
+            <select name="existing_skill">
+                <option value="">-- Choose --</option>
+                {% for skill in data.skills %}
+                    <option value="{{ skill }}">{{ skill }}</option>
+                {% endfor %}
+            </select><br>
+
+            <label>Or Add New Skill:</label><br>
+            <input type="text" name="new_skill" placeholder="e.g. docker"><br>
+        {% else %}
+            <label>Add First Skill:</label><br>
+            <input type="text" name="new_skill" required><br>
+        {% endif %}
+
+        <label>Skill Level:</label><br>
+        <select name="level" required>
+            <option value="1">1 - Basic</option>
+            <option value="2">2 - Intermediate</option>
+            <option value="3">3 - Expert</option>
+        </select><br>
+
+        <button type="submit">Add Skill</button>
+    </form>
+
+    <p><a href="/dashboard">📊 View Dashboard</a></p>
+
+    <h3>🧑‍💻 Current Entries:</h3>
+    <ul>
+        {% for entry in data.entries %}
+            <li>{{ entry.user }} - {{ entry.skill }} (Level {{ entry.level }})</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
