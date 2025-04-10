@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Skill Entry</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; max-width: 800px; margin: auto; }
+        input, select, button { margin: 6px 0; padding: 6px; width: 100%; box-sizing: border-box; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        td, th { padding: 8px; border: 1px solid #ddd; text-align: left; }
+    </style>
+</head>
+<body>
+    <h1>📝 Skill Self-Assessment</h1>
+    <form method="POST">
+        {% if not user %}
+            <label>Enter Your Name:</label>
+            <input type="text" name="name" required>
+            <button type="submit">Continue</button>
+        {% else %}
+            <h2>Hello, {{ user }}!</h2>
+            <table>
+                <tr>
+                    <th>Skill</th>
+                    <th>Theoretical Knowledge</th>
+                    <th>Practical Experience</th>
+                </tr>
+                {% for entry in user_skills %}
+                <tr>
+                    <td>{{ entry.skill }}</td>
+                    <td>
+                        <input type="range" name="knowledge_{{ entry.skill }}" min="1" max="3" value="1">
+                    </td>
+                    <td>
+                        <input type="range" name="experience_{{ entry.skill }}" min="1" max="3" value="1">
+                    </td>
+                </tr>
+                {% endfor %}
+                <tr>
+                    <td><input type="text" name="new_skill" placeholder="Add new skill"></td>
+                    <td>
+                        <input type="range" name="knowledge_new" min="1" max="3" value="1">
+                    </td>
+                    <td>
+                        <input type="range" name="experience_new" min="1" max="3" value="1">
+                    </td>
+                </tr>
+            </table>
+            <button type="submit" name="submit_levels">Save Skills</button>
+        {% endif %}
+    </form>
+    <p><a href="/dashboard">📊 View Dashboard</a></p>
+</body>
+</html>
