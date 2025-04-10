@@ -1,42 +1,4 @@
 {
-  "skills": [
-    "python",
-    "r",
-    "openlca",
-    "umberto",
-    "simapro",
-    "qgis"
-  ],
-  "entries": [
-    {
-      "user": "Daniel wilkinson",
-      "skill": "python",
-      "level": 2
-    },
-    {
-      "user": "Daniel wilkinson",
-      "skill": "r",
-      "level": 3
-    },
-    {
-      "user": "Daniel wilkinson",
-      "skill": "openlca",
-      "level": 2
-    },
-    {
-      "user": "Daniel wilkinson",
-      "skill": "umberto",
-      "level": 2
-    },
-    {
-      "user": "Daniel wilkinson",
-      "skill": "simapro",
-      "level": 3
-    },
-    {
-      "user": "Daniel wilkinson",
-      "skill": "qgis",
-      "level": 2
-    }
-  ]
+  "skills": [],
+  "entries": []
 }

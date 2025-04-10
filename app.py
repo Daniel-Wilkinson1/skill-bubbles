@@ -24,93 +24,95 @@ def save_data(data):
 @app.route("/", methods=["GET", "POST"])
 def index():
     data = load_data()
+    name = request.form.get("name", "").strip().capitalize()
 
-    if request.method == "POST":
-        name = request.form["name"].strip().capitalize()
-        existing_skill = request.form.get("existing_skill", "").strip().lower()
-        new_skill = request.form.get("new_skill", "").strip().lower()
-
-        # Prefer new skill if provided
-        skill = new_skill if new_skill else existing_skill
-
-        if not skill:
-            return render_template("index.html", data=data, error="Please select or add a skill.")
-        level = int(request.form["level"])
-
-        # Check if user already added this skill
+    # If POST, process form submission
+    if request.method == "POST" and "submit_levels" in request.form:
         for entry in data["entries"]:
-            if entry["user"] == name and entry["skill"] == skill:
-                return render_template("index.html", data=data, error=f"{name} already added '{skill}'.")
+            if entry["user"] == name:
+                skill = entry["skill"]
+                entry["knowledge"] = request.form.get(f"knowledge_{skill}")
+                entry["experience"] = request.form.get(f"experience_{skill}")
 
-        # Add skill to system if it doesn't exist yet
-        if skill not in data["skills"]:
-            data["skills"].append(skill)
-
-        # Add entry
-        data["entries"].append({"user": name, "skill": skill, "level": level})
+        # Handle new skill
+        new_skill = request.form.get("new_skill", "").strip().lower()
+        if new_skill:
+            knowledge = request.form.get("knowledge_new")
+            experience = request.form.get("experience_new")
+            if new_skill not in data["skills"]:
+                data["skills"].append(new_skill)
+            data["entries"].append({
+                "user": name,
+                "skill": new_skill,
+                "knowledge": knowledge,
+                "experience": experience
+            })
         save_data(data)
         return redirect("/")
 
-    return render_template("index.html", data=data)
+    # Filter skills assigned to this user
+    user_skills = [e for e in data["entries"] if e["user"] == name]
+
+    return render_template("index.html", data=data, user=name, user_skills=user_skills)
 
 @app.route("/dashboard")
 def dashboard():
     data = load_data()
     entries = data["entries"]
 
-    # Aggregate by skill
-    skill_map = defaultdict(lambda: {"total": 0, "users": []})
-    for entry in entries:
-        skill = entry["skill"]
-        skill_map[skill]["total"] += entry["level"]
-        skill_map[skill]["users"].append(f"{entry['user']} (Level {entry['level']})")
+    if not entries:
+        return "<h2>No skills added yet. <a href='/'>Go back</a></h2>"
 
-    skills = []
-    sizes = []
-    hover_texts = []
+    def prepare_data(field):
+        skill_map = defaultdict(lambda: {"total": 0, "users": []})
+        for entry in entries:
+            if entry[field]:
+                level_map = {"beginner": 1, "intermediate": 2, "expert": 3}
+                skill_map[entry["skill"]]["total"] += level_map.get(entry[field], 0)
+                skill_map[entry["skill"]]["users"].append(f"{entry['user']} ({entry[field].capitalize()})")
+        skills = []
+        sizes = []
+        hover_texts = []
+        for skill, info in skill_map.items():
+            skills.append(skill)
+            sizes.append(info["total"] * 10)
+            hover_texts.append("<br>".join(info["users"]))
+        return skills, sizes, hover_texts
 
-    for skill, info in skill_map.items():
-        skills.append(skill)
-        sizes.append(info["total"] * 10)  # scale up
-        hover_texts.append("<br>".join(info["users"]))
+    skills_k, sizes_k, hovers_k = prepare_data("knowledge")
+    skills_e, sizes_e, hovers_e = prepare_data("experience")
 
-    fig = px.scatter(
-        x=list(range(len(skills))),
-        y=[1] * len(skills),
-        size=sizes,
-        text=skills,
-        hover_name=skills,
-        custom_data=[hover_texts],
+    fig_k = px.scatter(
+        x=list(range(len(skills_k))), y=[2]*len(skills_k),
+        size=sizes_k, text=skills_k, custom_data=[hovers_k],
         size_max=100
     )
-
-    fig.update_traces(
+    fig_k.update_traces(
         textposition='top center',
         marker=dict(opacity=0.6),
-        hovertemplate='<b>%{text}</b><br>%{customdata[0]}<extra></extra>'
+        hovertemplate='%{customdata[0]}<extra></extra>'
     )
-    fig.update_layout(
-        title="Skill Bubble Chart",
+
+    fig_e = px.scatter(
+        x=list(range(len(skills_e))), y=[1]*len(skills_e),
+        size=sizes_e, text=skills_e, custom_data=[hovers_e],
+        size_max=100
+    )
+    fig_e.update_traces(
+        textposition='top center',
+        marker=dict(opacity=0.6),
+        hovertemplate='%{customdata[0]}<extra></extra>'
+    )
+
+    fig_k.add_trace(fig_e.data[0])
+    fig_k.update_layout(
+        title="Skill Bubbles: Theoretical (Top) vs Practical (Bottom)",
         showlegend=False,
-        xaxis=dict(
-            showgrid=False,
-            zeroline=False,
-            showticklabels=False,
-            ticks='',
-            title=None
-        ),
-        yaxis=dict(
-            showgrid=False,
-            zeroline=False,
-            showticklabels=False,
-            ticks='',
-            title=None
-        ),
-        margin=dict(l=40, r=40, t=60, b=40)
+        xaxis=dict(showgrid=False, zeroline=False, showticklabels=False, title=None),
+        yaxis=dict(showgrid=False, zeroline=False, showticklabels=False, title=None),
+        margin=dict(l=40, r=40, t=60, b=40),
+        height=600
     )
 
-    graph_html = pio.to_html(fig, full_html=False)
+    graph_html = pio.to_html(fig_k, full_html=False)
     return render_template("dashboard.html", graph_html=Markup(graph_html))
-
-if __name__ == "__main__":
-    app.run(debug=True)
