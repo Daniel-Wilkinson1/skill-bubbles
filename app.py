@@ -70,79 +70,61 @@ def dashboard():
     level_map_knowledge = {"beginner": 1, "intermediate": 2, "expert": 3}
     level_map_experience = {"1-2 years": 1, "3-5 years": 2, "5+ years": 3}
 
-    skill_to_x = {skill: i for i, skill in enumerate(sorted(set(entry["skill"] for entry in entries)))}
-
-    x = []
-    y = []
-    sizes = []
-    texts = []
-    custom_data = []
-    colors = []
+    # Prepare data for heatmap
+    heatmap_data = defaultdict(lambda: {"Theoretical": [], "Practical": [], "Hover_Theoretical": [], "Hover_Practical": []})
 
     for entry in entries:
         skill = entry["skill"]
         user = entry["user"]
-        knowledge = entry.get("knowledge")
-        experience = entry.get("experience")
+        if entry.get("knowledge"):
+            level = level_map_knowledge.get(entry["knowledge"], 0)
+            heatmap_data[skill]["Theoretical"].append(level)
+            heatmap_data[skill]["Hover_Theoretical"].append(f"{user} ({entry['knowledge']})")
+        if entry.get("experience"):
+            level = level_map_experience.get(entry["experience"], 0)
+            heatmap_data[skill]["Practical"].append(level)
+            heatmap_data[skill]["Hover_Practical"].append(f"{user} ({entry['experience']})")
 
-        if knowledge:
-            score = level_map_knowledge.get(knowledge, 0)
-            x.append(skill_to_x[skill])
-            y.append(2)
-            sizes.append(score * 30)
-            texts.append("")
-            custom_data.append(f"{skill}<br>{user} (Knowledge: {knowledge})")
-            colors.append("Theoretical")
+    records = []
+    for skill, values in heatmap_data.items():
+        for kind, levels_key, hover_key in [("Theoretical", "Theoretical", "Hover_Theoretical"), ("Practical", "Practical", "Hover_Practical")]:
+            levels = values[levels_key]
+            hovers = values[hover_key]
+            if levels:
+                avg_score = sum(levels) / len(levels)
+                hover_text = "<br>".join(hovers)
+                records.append({
+                    "Skill": skill.capitalize(),
+                    "Type": kind,
+                    "Score": round(avg_score, 1),
+                    "Hover": hover_text
+                })
 
-        if experience:
-            score = level_map_experience.get(experience, 0)
-            x.append(skill_to_x[skill])
-            y.append(1)
-            sizes.append(score * 30)
-            texts.append("")
-            custom_data.append(f"{skill}<br>{user} (Experience: {experience})")
-            colors.append("Practical")
+    df = pd.DataFrame(records)
+    pivot_df = df.pivot(index="Type", columns="Skill", values="Score")
+    hover_df = df.pivot(index="Type", columns="Skill", values="Hover")
 
-    df = pd.DataFrame({
-        "x": x,
-        "y": y,
-        "size": sizes,
-        "skill": texts,
-        "hover": custom_data,
-        "type": colors
-    })
-
-    fig = px.scatter(
-        df,
-        x="x",
-        y="y",
-        size="size",
-        text="skill",
-        custom_data=["hover"],
-        color="type",
-        size_max=100,
-        color_discrete_map={"Theoretical": "blue", "Practical": "orange"}
+    fig = px.imshow(
+        pivot_df,
+        color_continuous_scale="Blues",
+        labels=dict(x="Skill", y="Type", color="Skill Level"),
+        aspect="auto"
     )
-    fig.update_traces(
-        textposition='top center',
-        marker=dict(opacity=0.8),
-        hovertemplate='%{customdata[0]}<extra></extra>'
-    )
+
+    # Add hover info manually and format scores
+    for i, row in enumerate(pivot_df.index):
+        for j, col in enumerate(pivot_df.columns):
+            fig.data[0].text[i][j] = f"{pivot_df.loc[row, col]:.1f}" if not pd.isna(pivot_df.loc[row, col]) else ""
+            hovertext = hover_df.at[row, col] if (row in hover_df.index and col in hover_df.columns) else ""
+            fig.data[0].hovertext[i][j] = hovertext
+
     fig.update_layout(
-        title="Skill Bubbles: Theoretical (Top) vs Practical (Bottom)",
-        showlegend=False,
-        xaxis=dict(
-            tickvals=list(skill_to_x.values()),
-            ticktext=[skill.capitalize() for skill in skill_to_x.keys()],
-            showgrid=False, zeroline=False, showticklabels=True, title=None
-        ),
-        yaxis=dict(
-            tickvals=[1, 2],
-            ticktext=["Practical", "Theoretical"],
-            showgrid=False, zeroline=False, title=None
-        ),
+        title="Skill Heatmap: Theoretical vs Practical",
         margin=dict(l=40, r=40, t=60, b=40),
-        height=600
+        height=500,
+        xaxis=dict(showticklabels=True, title=None),
+        yaxis=dict(showticklabels=True, title=None),
+        showlegend=False
     )
 
     graph_html = pio.to_html(fig, full_html=False)
