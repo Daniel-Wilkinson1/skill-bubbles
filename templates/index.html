@@ -1,53 +1,92 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Skill Entry</title>
+    <meta charset="UTF-8">
+    <title>Skill Entry Form</title>
     <style>
-        body { font-family: sans-serif; padding: 20px; max-width: 800px; margin: auto; }
-        input, select, button { margin: 6px 0; padding: 6px; width: 100%; box-sizing: border-box; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        td, th { padding: 8px; border: 1px solid #ddd; text-align: left; }
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; }
+        input, select { width: 100%; padding: 8px; }
+        .skill-block { margin-bottom: 20px; border: 1px solid #ccc; padding: 15px; border-radius: 8px; }
+        .add-skill { margin-top: 15px; }
+        .submit-btn { padding: 10px 20px; font-size: 16px; margin-top: 20px; }
+        .btn {
+            display: inline-block;
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
     </style>
 </head>
 <body>
-    <h1>📝 Skill Self-Assessment</h1>
+
+    <a href="/dashboard" class="btn">View Dashboard</a>
+
+    <h1>Enter Your Skills</h1>
     <form method="POST">
-        {% if not user %}
-            <label>Enter Your Name:</label>
-            <input type="text" name="name" required>
-            <button type="submit">Continue</button>
-        {% else %}
-            <h2>Hello, {{ user }}!</h2>
-            <table>
-                <tr>
-                    <th>Skill</th>
-                    <th>Theoretical Knowledge</th>
-                    <th>Practical Experience</th>
-                </tr>
-                {% for entry in user_skills %}
-                <tr>
-                    <td>{{ entry.skill }}</td>
-                    <td>
-                        <input type="range" name="knowledge_{{ entry.skill }}" min="1" max="3" value="1">
-                    </td>
-                    <td>
-                        <input type="range" name="experience_{{ entry.skill }}" min="1" max="3" value="1">
-                    </td>
-                </tr>
-                {% endfor %}
-                <tr>
-                    <td><input type="text" name="new_skill" placeholder="Add new skill"></td>
-                    <td>
-                        <input type="range" name="knowledge_new" min="1" max="3" value="1">
-                    </td>
-                    <td>
-                        <input type="range" name="experience_new" min="1" max="3" value="1">
-                    </td>
-                </tr>
-            </table>
-            <button type="submit" name="submit_levels">Save Skills</button>
-        {% endif %}
+        <div class="form-group">
+            <label for="name">Your Name:</label>
+            <input name="name" type="text" required>
+        </div>
+
+        <div id="skills-container">
+            <div class="skill-block">
+                <label>Skill Name:</label>
+                <input type="text" name="new_skill" required>
+
+                <label>Knowledge Level:</label>
+                <select name="knowledge" required>
+                    <option value="beginner">Beginner</option>
+                    <option value="intermediate">Intermediate</option>
+                    <option value="expert">Expert</option>
+                </select>
+
+                <label>Experience Duration:</label>
+                <select name="experience" required>
+                    <option value="1-2 years">1-2 years</option>
+                    <option value="3-5 years">3-5 years</option>
+                    <option value="5+ years">5+ years</option>
+                </select>
+            </div>
+        </div>
+
+        <button type="button" class="add-skill" onclick="addSkill()">+ Add Another Skill</button><br>
+        <button type="submit" class="submit-btn">Submit</button>
     </form>
-    <p><a href="/dashboard">📊 View Dashboard</a></p>
+
+    <script>
+        function addSkill() {
+            const container = document.getElementById('skills-container');
+            const block = document.createElement('div');
+            block.className = 'skill-block';
+            block.innerHTML = `
+                <label>Skill Name:</label>
+                <input type="text" name="new_skill" required>
+
+                <label>Knowledge Level:</label>
+                <select name="knowledge" required>
+                    <option value="beginner">Beginner</option>
+                    <option value="intermediate">Intermediate</option>
+                    <option value="expert">Expert</option>
+                </select>
+
+                <label>Experience Duration:</label>
+                <select name="experience" required>
+                    <option value="1-2 years">1-2 years</option>
+                    <option value="3-5 years">3-5 years</option>
+                    <option value="5+ years">5+ years</option>
+                </select>
+            `;
+            container.appendChild(block);
+        }
+    </script>
+
 </body>
 </html>

@@ -1,4 +1,124 @@
 {
-  "skills": [],
-  "entries": []
+  "skills": [
+    "r",
+    "openlca",
+    "umberto",
+    "simapro",
+    "qgis",
+    "draw io",
+    "python",
+    "arcmap",
+    "life cycle assessment"
+  ],
+  "entries": [
+    {
+      "user": "",
+      "skill": "r",
+      "knowledge": null,
+      "experience": null
+    },
+    {
+      "user": "",
+      "skill": "openlca",
+      "knowledge": null,
+      "experience": null
+    },
+    {
+      "user": "",
+      "skill": "umberto",
+      "knowledge": null,
+      "experience": null
+    },
+    {
+      "user": "",
+      "skill": "simapro",
+      "knowledge": null,
+      "experience": null
+    },
+    {
+      "user": "",
+      "skill": "qgis",
+      "knowledge": "2",
+      "experience": "2"
+    },
+    {
+      "user": "Daniel wilkinson",
+      "skill": "r",
+      "knowledge": "intermediate",
+      "experience": "3-5 years"
+    },
+    {
+      "user": "Daniel wilkinson",
+      "skill": "openlca",
+      "knowledge": "intermediate",
+      "experience": "1-2 years"
+    },
+    {
+      "user": "Daniel wilkinson",
+      "skill": "umberto",
+      "knowledge": "intermediate",
+      "experience": "1-2 years"
+    },
+    {
+      "user": "Daniel wilkinson",
+      "skill": "simapro",
+      "knowledge": "intermediate",
+      "experience": "1-2 years"
+    },
+    {
+      "user": "Daniel wilkinson",
+      "skill": "qgis",
+      "knowledge": "intermediate",
+      "experience": "3-5 years"
+    },
+    {
+      "user": "Daniel wilkinson",
+      "skill": "draw io",
+      "knowledge": "expert",
+      "experience": "1-2 years"
+    },
+    {
+      "user": "Daniel wilkinson",
+      "skill": "r",
+      "knowledge": "intermediate",
+      "experience": "3-5 years"
+    },
+    {
+      "user": "Daniel wilkinson",
+      "skill": "qgis",
+      "knowledge": "intermediate",
+      "experience": "1-2 years"
+    },
+    {
+      "user": "Daniel wilkinson",
+      "skill": "openlca",
+      "knowledge": "intermediate",
+      "experience": "1-2 years"
+    },
+    {
+      "user": "Daniel wilkinson",
+      "skill": "python",
+      "knowledge": "intermediate",
+      "experience": "3-5 years"
+    },
+    {
+      "user": "Daniel wilkinson",
+      "skill": "arcmap",
+      "knowledge": "intermediate",
+      "experience": "1-2 years"
+    },
+    {
+      "user": "Daniel wilkinson",
+      "skill": "python",
+      "knowledge": "intermediate",
+      "experience": "3-5 years"
+    },
+    {
+      "user": "Daniel wilkinson",
+      "skill": "life cycle assessment",
+      "knowledge": "intermediate",
+      "experience": "3-5 years",
+      "timestamp": "2025-04-14T12:08:30.881480"
+    }
+  ]
 }

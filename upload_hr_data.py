@@ -2,7 +2,7 @@ import pandas as pd
 import json
 
 # Load Excel file
-df = pd.read_excel("hr_skills_template.xlsx")
+df = pd.read_excel("hr_data/hr_skills_template.xlsx")
 
 # Build initial skill entries with no ratings yet
 entries = []
